@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/muratsplat/throttler.svg?branch=master)](https://travis-ci.org/muratsplat/throttler)
 # Simple throttler Implementation in Golang
 
 ## Example 
