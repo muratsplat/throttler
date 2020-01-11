@@ -91,8 +91,7 @@ func TestInSafeExecuterSimple(t *testing.T) {
 		taks6,
 	})
 
-	done := make(chan int, 2)
-
+	done := make(chan int)
 	go func() {
 		err, results := throttler.Execute(3)
 		if err != nil {
@@ -116,5 +115,7 @@ func TestInSafeExecuterSimple(t *testing.T) {
 		done <- len(*results)
 	}()
 
-	<-done
+	for i := 0; i < 2; i++ {
+		<-done
+	}
 }
