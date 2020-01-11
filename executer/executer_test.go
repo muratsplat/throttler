@@ -16,19 +16,19 @@ func TestExecuterSimple(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	taks1 := mocks.NewMockTask(ctrl)
-	taks1.EXPECT().Do().Return(nil).AnyTimes()
+	taks1.EXPECT().Do().Times(1).Return(nil)
 
 	taks2 := mocks.NewMockTask(ctrl)
-	taks2.EXPECT().Do().Return(nil).AnyTimes()
+	taks2.EXPECT().Do().Times(1).Return(nil)
 
 	taks3 := mocks.NewMockTask(ctrl)
-	taks3.EXPECT().Do().Return(nil).AnyTimes()
+	taks3.EXPECT().Do().Times(1).Return(nil)
 
 	taks4 := mocks.NewMockTask(ctrl)
-	taks4.EXPECT().Do().Return(nil).AnyTimes()
+	taks4.EXPECT().Do().Times(1).Return(nil)
 
 	taks5 := mocks.NewMockTask(ctrl)
-	taks5.EXPECT().Do().Return(nil).AnyTimes()
+	taks5.EXPECT().Do().Times(1).Return(nil)
 
 	throttler := NewExecuter([]task.Task{
 		taks1,
@@ -65,22 +65,22 @@ func TestInSafeExecuterSimple(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 	taks1 := mocks.NewMockTask(ctrl)
-	taks1.EXPECT().Do().Return(nil).AnyTimes()
+	taks1.EXPECT().Do().Times(1).Return(nil)
 
 	taks2 := mocks.NewMockTask(ctrl)
-	taks2.EXPECT().Do().Return(nil).AnyTimes()
+	taks2.EXPECT().Do().Times(1).Return(nil)
 
 	taks3 := mocks.NewMockTask(ctrl)
-	taks3.EXPECT().Do().Return(nil).AnyTimes()
+	taks3.EXPECT().Do().Times(1).Return(nil)
 
 	taks4 := mocks.NewMockTask(ctrl)
-	taks4.EXPECT().Do().Return(nil).AnyTimes()
+	taks4.EXPECT().Do().Times(1).Return(nil)
 
 	taks5 := mocks.NewMockTask(ctrl)
-	taks5.EXPECT().Do().Return(nil).AnyTimes()
+	taks5.EXPECT().Do().Times(1).Return(nil)
 
 	taks6 := mocks.NewMockTask(ctrl)
-	taks6.EXPECT().Do().Return(nil).AnyTimes()
+	taks6.EXPECT().Do().Times(1).Return(nil)
 
 	throttler := NewExecuter([]task.Task{
 		taks1,
@@ -114,7 +114,6 @@ func TestInSafeExecuterSimple(t *testing.T) {
 			t.Fatalf("Expexted: 4, but got: %d", len(*results))
 		}
 		done <- len(*results)
-
 	}()
 
 	<-done

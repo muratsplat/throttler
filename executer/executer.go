@@ -58,11 +58,9 @@ func (e *Executer) pop() (error, task.Task) {
 func (e *Executer) Execute(number int) (error, *Result) {
 	result := make(chan int)
 	var errList Result
-
 	last := 0
 	for i := 0; i < number; i++ {
 		err, t := e.pop()
-
 		if err == ErrNothingToCall {
 			break
 		}
