@@ -18,16 +18,23 @@ func main() {
 	}
 
 	exe := executer.NewExecuter(tasklist)
-	times := 6
+	times := len(tasklist)
 	done := make(chan error)
 
 	for i := 0; i < times; i++ {
 		go func() {
 			err, _ := exe.Execute(2)
-			done <- err
+			//  Maybe error hanfling
 			if err != nil {
+				if err == executer.ErrNothingToCall {
+					done <- err
+					return
+				}
+				// an external error
 				panic(err)
 			}
+			done <- err
+
 		}()
 	}
 
