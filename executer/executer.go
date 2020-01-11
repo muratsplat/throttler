@@ -18,8 +18,13 @@ type Throttler interface {
 }
 
 type Executer struct {
-	mux   sync.Mutex
-	tasks map[int]task.Task
+	mux   sync.RWMutex
+	tasks *TaskListInSafe
+}
+
+type TaskListInSafe struct {
+	list map[int]task.Task
+	mux  sync.Mutex
 }
 
 func NewExecuter(list []task.Task) Throttler {
@@ -28,34 +33,49 @@ func NewExecuter(list []task.Task) Throttler {
 		mapList[k] = task
 	}
 	return &Executer{
-		tasks: mapList,
+		tasks: &TaskListInSafe{
+			list: mapList,
+		},
 	}
 }
 
-func (e *Executer) Execute(number int) (error, *Result) {
-	e.mux.Lock()
-	defer e.mux.Unlock()
-	result := make(chan int)
-	var errList Result
-
-	if len(e.tasks) == 0 {
+func (e *Executer) pop() (error, task.Task) {
+	e.tasks.mux.Lock()
+	defer e.tasks.mux.Unlock()
+	if len(e.tasks.list) == 0 {
 		return ErrNothingToCall, nil
 	}
 
-	for i := 0; i < number; i++ {
-		for k, t := range e.tasks {
-			go func(result chan int, idx int, t task.Task) {
-				err := t.Do()
-				errList = append(errList, err)
-
-				result <- idx
-			}(result, k, t)
-		}
+	for k, one := range e.tasks.list {
+		delete(e.tasks.list, k)
+		return nil, one
 	}
 
+	return ErrNothingToCall, nil
+
+}
+
+func (e *Executer) Execute(number int) (error, *Result) {
+	result := make(chan int)
+	var errList Result
+
+	last := 0
 	for i := 0; i < number; i++ {
-		doneIdx := <-result
-		delete(e.tasks, doneIdx)
+		err, t := e.pop()
+
+		if err == ErrNothingToCall {
+			break
+		}
+		last = i + 1
+		go func(result chan int, idx int, t task.Task) {
+			err := t.Do()
+			errList = append(errList, err)
+			result <- idx
+		}(result, i, t)
+
+	}
+	for i := 0; i < last; i++ {
+		<-result
 	}
 
 	return nil, &errList

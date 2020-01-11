@@ -79,46 +79,41 @@ func TestInSafeExecuterSimple(t *testing.T) {
 	taks5 := mocks.NewMockTask(ctrl)
 	taks5.EXPECT().Do().Return(nil).AnyTimes()
 
+	taks6 := mocks.NewMockTask(ctrl)
+	taks6.EXPECT().Do().Return(nil).AnyTimes()
+
 	throttler := NewExecuter([]task.Task{
 		taks1,
 		taks2,
 		taks3,
 		taks4,
 		taks5,
+		taks6,
 	})
 
-	done := make(chan interface{}, 3)
+	done := make(chan int, 2)
 
 	go func() {
-		err, results := throttler.Execute(1)
+		err, results := throttler.Execute(3)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(*results) != 1 {
+		if len(*results) != 3 {
 			t.Fatalf("Expexted: one, but got: %d", len(*results))
 		}
-		done <- true
+		done <- len(*results)
 
 	}()
 
 	go func() {
-		err, results := throttler.Execute(4)
+		err, results := throttler.Execute(3)
 		if err != nil {
 			t.Fatal(err)
 		}
-		if len(*results) != 4 {
+		if len(*results) != 3 {
 			t.Fatalf("Expexted: 4, but got: %d", len(*results))
 		}
-		done <- true
-
-	}()
-
-	go func() {
-		err, _ := throttler.Execute(1)
-		if err != nil && err != ErrNothingToCall {
-			t.Fatal(err)
-		}
-		done <- true
+		done <- len(*results)
 
 	}()
 

@@ -1,0 +1,12 @@
+language: go
+
+go:
+  - "1.13.x"
+  #- master
+jobs:
+  include:
+    - stage: test
+      name: "Run test"   
+      script:
+        - go test ./...
+        

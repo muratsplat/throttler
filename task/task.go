@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	ErrNoSpeachToSay = errors.New(" not word to say")
+	ErrNoSpeachToSay = errors.New("not word to say")
 )
 
 type Person struct {
@@ -32,6 +32,7 @@ func (p *Person) Do() error {
 	if p.MySpeach == nil {
 		return ErrNoSpeachToSay
 	}
+
 	speach := fmt.Sprintf("%s\n", *p.MySpeach)
 	_, err := p.To.Write([]byte(speach))
 	if err != nil {
